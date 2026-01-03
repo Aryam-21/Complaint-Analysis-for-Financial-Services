@@ -1,3 +1,19 @@
+# Ignore downloads and temporary files
+*.crdownload
+*.zip
+*.tar
+*.gz
+
+# Ignore large datasets
+data/raw/
+data/external/
+
+# Ignore notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
 
 # Python
 # Python cache and bytecode
