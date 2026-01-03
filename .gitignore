@@ -5,7 +5,7 @@
 *.gz
 *.csv
 *.npy
-
+*.index
 # Ignore large datasets
 data/raw/
 data/external/
