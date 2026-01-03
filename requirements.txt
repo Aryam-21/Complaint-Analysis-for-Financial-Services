@@ -1,0 +1,6 @@
+sentence-transformers>=2.2.2
+numpy
+pandas
+scikit-learn
+faiss-cpu
+langchain-text-splitters
