@@ -1,197 +1,211 @@
 # Complaint-Analysis-for-Financial-Services
-Embedding-Ready Pipeline for Retrieval-Augmented Generation (RAG)
 
-📌 Project Overview
+This repository contains the implementation for **Task 1 and Task 2** of the CrediTrust AI Mastery Challenge: building a **Retrieval-Augmented Generation (RAG) pipeline** for customer complaints. It focuses on **data preprocessing, stratified sampling, chunking, embedding, and FAISS vector indexing**, providing a foundation for a complaint-answering AI system.
 
-This project focuses on analyzing consumer complaints in the financial services domain and preparing them for downstream machine learning and Retrieval-Augmented Generation (RAG) applications.
+---
 
-The work is divided into fore core tasks:
+## 🏢 Business Context
 
-Task 1: Data Analysis & Preprocessing
+CrediTrust Financial is a digital finance company operating in East Africa. Internal teams handle thousands of customer complaints each month across five product categories:
 
-Task 2: Text Chunking & Embedding Pipeline
+- Credit Cards
+- Personal Loans
+- Savings Accounts
+- Money Transfers
 
-Task 3: Building the RAG Core Logic and Evaluation
+Currently, manual complaint analysis is slow and reactive. The goal is to **turn unstructured complaint narratives into actionable insights** quickly using AI.
 
-Task 4: Creating an Interactive Chat Interface
+---
 
-The final output of this repository is an embedding-ready dataset where complaint narratives are cleaned, stratified, chunked, embedded, and stored with rich metadata for traceability.
+## 📁 Repository Structure
 
-📂 Repository Structure
-Complaint-Analysis-for-Financial-Services/
-│
+```text
+rag-complaint-chatbot/
 ├── data/
-│   ├── raw/                     # Original complaint datasets
-│   └── processed/               # Cleaned & filtered datasets
-│
-├── notebooks/
-│   ├── eda.ipynb
-│   └── embedding.ipynb
-│
-├── src/
-│   ├── embedding.py
-│
-├── vector_store/
-│   ├── chunks_metadata.csv      # Chunk metadata
-│   ├── chunks_embeddings.npy    # Stored embeddings
-│   └── faiss.index              # FAISS index
-│
-├── requirements.txt
-└── README.md
+│   ├── raw/                    # Raw CFPB complaint datasets
+│   └── processed/              # Cleaned/filtered complaints
+├── vector_store/               # Persisted embeddings and FAISS index
+├── notebooks/                  # Jupyter notebooks for EDA and pipeline demos
+├── src/                        # Source code (pipeline classes)
+├── tests/                      # Unit tests for pipeline methods
+├── app.py                      # Future RAG chatbot UI (Gradio/Streamlit)
+├── requirements.txt            # Python dependencies
+└── README.md                   # Project documentation
 
-✅ Task 1: Data Analysis & Preprocessing (Completed)
-Objective
+ Task 1: EDA and Data Preprocessing
+Objectives:
 
-Prepare a clean, feature-rich complaint dataset suitable for modeling and semantic retrieval.
+Load the CFPB complaint dataset.
 
-Key Steps
+Explore and summarize complaints by product, issue type, and narrative length.
 
-Loaded raw CFPB complaint data
+Clean text narratives for embedding quality:
 
-Removed duplicates and invalid records
+Lowercasing
 
-Handled missing values
+Removing boilerplate or special characters
 
-Performed exploratory data analysis (EDA)
+Filtering only relevant products
 
-Engineered features such as:
+Save cleaned, filtered dataset for downstream tasks.
 
-Word counts
+Output:
 
-Cleaned complaint narratives
+data/processed/filtered_complaints.csv – cleaned and filtered complaints.
 
-Verified class imbalance across product categories
+Notebook with visualizations and analysis of complaint distributions.
 
-Output
+ Task 2: Chunking, Embedding, and FAISS Indexing
+Objectives:
 
-Cleaned dataset stored in:
+Perform stratified sampling (10K–15K complaints) to ensure proportional representation of product categories.
 
-data/processed/filtered_complaints.csv
+Chunk long complaint narratives (default: 500 characters with 50 overlap) for effective embedding.
 
+Generate vector embeddings using Sentence-Transformers all-MiniLM-L6-v2:
 
-Task 1 fully satisfies the assignment requirements.
+Small, fast, and suitable for semantic search.
 
-✅ Task 2: Text Chunking & Embedding Pipeline (Core Completed)
-Objective
+Produces 384-dimensional embeddings.
 
-Transform complaint narratives into vector embeddings suitable for semantic search and RAG systems.
+Build a FAISS vector store to store embeddings for semantic search.
 
-Pipeline Overview
+Save both metadata and embeddings for future RAG queries.
 
-Implemented as a reusable Python class:
+Pipeline Highlights:
 
-ComplaintEmbeddingPipeline
+Class-based, modular design: ComplaintEmbeddingPipeline
 
-Steps Implemented
-1. Stratified Sampling
+load_data()
 
-Preserves product-level distribution
+stratified_sample()
 
-Prevents bias during downstream retrieval
+chunk_text()
 
-pipeline.stratified_sample()
+load_embedding_model()
 
-2. Text Chunking
+generate_embeddings(batch_size=64)
 
-Uses RecursiveCharacterTextSplitter
+save_chunks_and_embeddings(metadata_path, embedding_path)
 
-Chunk size: 500 characters
+build_faiss_index(index_path)
 
-Overlap: 100 characters
+Error handling ensures proper method sequence and robust execution.
 
-Each chunk retains metadata:
+Outputs:
 
-Complaint ID
+Metadata CSV: vector_store/chunks_metadata.csv
 
-Product category
+Embeddings array: vector_store/chunks_embeddings.npy
 
-Chunk index
+FAISS index: vector_store/faiss.index
 
-Chunk text
+⚙️ Installation
+bash
+Copy code
+git clone <repo-url>
+cd rag-complaint-chatbot
 
-pipeline.chunk_text()
+# Optional: create a virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
 
-3. Embedding Model Selection
+pip install --upgrade pip
+pip install -r requirements.txt
 
-Model: sentence-transformers/all-MiniLM-L6-v2
+# FAISS installation
+pip install faiss-cpu        # For CPU
+# pip install faiss-gpu       # If GPU is available
+Python dependencies:
 
-Why this model?
+pandas
 
-Lightweight and fast
+numpy
 
-Strong semantic performance
+tqdm
 
-384-dimensional embeddings
+scikit-learn
 
-Widely adopted in production RAG systems
+sentence-transformers
 
-pipeline.load_embedding_model()
-pipeline.generate_embeddings()
+faiss-cpu
 
-4. Embedding Storage
+langchain (for text splitting)
 
-Embeddings stored as float32
-
-Metadata preserved for traceability
-
-Saved as:
-
-CSV for metadata
-
-NumPy array for embeddings
-
-pipeline.save_chunks_and_embeddings(
-    metadata_path="../vector_store/chunks_metadata.csv",
-    embedding_path="../vector_store/chunks_embeddings.npy"
-)
-
-Vector Store Integration (Planned / Partially Implemented)
-Current Status
-
-Embeddings are ready for indexing
-
-FAISS integration is implemented in code but optional due to environment constraints
-
-FAISS Index Support
-pipeline.build_faiss_index("../vector_store/faiss.index")
-
-
-Uses IndexFlatL2 (exact similarity search)
-
-Supports persistence and reload
-
-Fully compatible with RAG pipelines
-
-⚠️ Note: On Windows, FAISS requires faiss-cpu.
-ChromaDB is a planned alternative backend for broader compatibility.
-
- How to Run the Pipeline
-from src.embedding import ComplaintEmbeddingPipeline
+ Usage Example
+python
+Copy code
+from src.pipeline import ComplaintEmbeddingPipeline
 
 pipeline = ComplaintEmbeddingPipeline(
-    csv_path="../data/processed/filtered_complaints.csv"
+    csv_path="data/processed/filtered_complaints.csv"
 )
 
+# Task 1 + Task 2
 pipeline.load_data()
 pipeline.stratified_sample()
 pipeline.chunk_text()
 pipeline.load_embedding_model()
-pipeline.generate_embeddings()
+pipeline.generate_embeddings(batchsize=64)
 pipeline.save_chunks_and_embeddings(
-    metadata_path="../vector_store/chunks_metadata.csv",
-    embedding_path="../vector_store/chunks_embeddings.npy"
+    metadata_path="vector_store/chunks_metadata.csv",
+    embedding_path="vector_store/chunks_embeddings.npy"
 )
 
-Future Work
+# Build FAISS index
+faiss_index = pipeline.build_faiss_index(index_path="vector_store/faiss.index")
+ Proportional Sampling Verification
+The stratified sampling ensures product categories in the sample reflect the original distribution:
 
-Based on instructor feedback and project roadmap:
+python
+Copy code
+import pandas as pd
 
-1. Wire FAISS or ChromaDB as a default vector store
+pd.concat([
+    pipeline.df[pipeline.product_col].value_counts(normalize=True).rename("Original"),
+    pipeline.df_sample[pipeline.product_col].value_counts(normalize=True).rename("Sample")
+], axis=1)
+## Next Steps (RAG Integration)
+Load chunks_metadata.csv and faiss.index in a RAG retrieval pipeline.
 
-2. Add semantic search query interface
+Use retrieved chunks as context for a language model to answer natural-language questions.
 
-3.  Integrate with LLMs for full RAG workflow
+Integrate with Gradio or Streamlit for an interactive chatbot.
 
-4.  Improve documentation and usage examples
+Evaluate RAG answers with qualitative metrics and real complaints.
 
-5. Add configuration support (YAML / env)
+ Tests
+Create basic unit tests in tests/:
+
+Ensure CSV loads correctly.
+
+Check chunking produces non-empty text.
+
+Validate embedding dimensions.
+
+Verify FAISS index stores the correct number of vectors.
+
+ Notes & Best Practices
+Batch embeddings to avoid memory overload.
+
+Use GPU if available (device='cuda') for faster embedding.
+
+Maintain metadata to trace each chunk back to the original complaint.
+
+Keep vector store and metadata versioned for reproducibility.
+
+References
+FAISS Documentation
+
+Sentence Transformers
+
+LangChain Text Splitter
+
+Gradio Docs
+
+CFPB Dataset: Consumer Financial Protection Bureau
+
+Author: Aryam Tesfay
+Project: 10 Academy AI Mastery Challenge
+Tasks: 1 (EDA & preprocessing), 2 (Embedding & FAISS indexing)
