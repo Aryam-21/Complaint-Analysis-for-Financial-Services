@@ -1,0 +1,17 @@
+[33mcommit cf39122b84e6b9ef805e6d9dbcbf44872c726e6d[m
+Author: Aryam-21 <aryamtesfay963@gmail.com>
+Date:   Sat Jan 3 04:16:26 2026 +0300
+
+    Remove accidentally tracked large download file
+
+ Unconfirmed 35209.crdownload | Bin [31m1248574554[m -> [32m0[m bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit d6ff4a21f0c556885a47979df2cc711f7f3cf544[m
+Author: Aryam-21 <aryamtesfay963@gmail.com>
+Date:   Fri Jan 2 14:05:11 2026 +0300
+
+    Load data and applay EDA.
+
+ Unconfirmed 35209.crdownload | Bin [31m0[m -> [32m1248574554[m bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
