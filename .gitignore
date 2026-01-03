@@ -3,6 +3,8 @@
 *.zip
 *.tar
 *.gz
+*.csv
+*.npy
 
 # Ignore large datasets
 data/raw/
