@@ -6,7 +6,7 @@ class Ploter:
     def bar_ploter(self,product_counts):
         product_counts.plot(
             kind='bar',
-            figsize=(12,6),
+            figsize=(12,8),
             title='Complaints by Product',
             color='#ad12a3'
         )
