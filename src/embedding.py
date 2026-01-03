@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
+import faiss
+import os
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
+
 class ComplaintEmbeddingPipeline:
     """
     pipeline for:
@@ -98,3 +101,16 @@ class ComplaintEmbeddingPipeline:
         if embedding_path:
             np.save(embedding_path,np.vstack(self.chunks_df['embedding'].values))
             print(f"[INFO] Saved embeddings array to {embedding_path}")
+    def build_faiss_index(self, index_path='../vector_store/faiss.index'):
+        """Built and persist a FAISS vector index from chunk bembeddings."""
+        if self.chunks_df is None or 'embedding' not in self.chunks_df.columns:
+            raise ValueError('Embeddings not found. Run generate_embeddings() first.')
+        embeddings = np.vstack(self.chunks_df['embedding'].values)
+        dim = embeddings.shape[1] #384 for miniLM
+        index = faiss.IndexFlatL2(dim)
+        index.add(embeddings)
+        os.makedirs(os.path.dirname(index_path), exist_ok=True)
+        faiss.write_index(index, index_path)
+        print(f"[INFO] FAISS index built with {index.ntotal} vectors")
+        print(f"[INFO] Index saved to {index_path}")
+        return index
