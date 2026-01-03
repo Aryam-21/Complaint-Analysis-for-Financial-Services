@@ -31,7 +31,8 @@ rag-complaint-chatbot/
 ├── app.py                      # Future RAG chatbot UI (Gradio/Streamlit)
 ├── requirements.txt            # Python dependencies
 └── README.md                   # Project documentation
-📌 Task 1: EDA and Data Preprocessing
+
+ Task 1: EDA and Data Preprocessing
 Objectives:
 
 Load the CFPB complaint dataset.
@@ -54,7 +55,7 @@ data/processed/filtered_complaints.csv – cleaned and filtered complaints.
 
 Notebook with visualizations and analysis of complaint distributions.
 
-📌 Task 2: Chunking, Embedding, and FAISS Indexing
+ Task 2: Chunking, Embedding, and FAISS Indexing
 Objectives:
 
 Perform stratified sampling (10K–15K complaints) to ensure proportional representation of product categories.
@@ -132,7 +133,7 @@ faiss-cpu
 
 langchain (for text splitting)
 
-🏃 Usage Example
+ Usage Example
 python
 Copy code
 from src.pipeline import ComplaintEmbeddingPipeline
@@ -154,7 +155,7 @@ pipeline.save_chunks_and_embeddings(
 
 # Build FAISS index
 faiss_index = pipeline.build_faiss_index(index_path="vector_store/faiss.index")
-📊 Proportional Sampling Verification
+ Proportional Sampling Verification
 The stratified sampling ensures product categories in the sample reflect the original distribution:
 
 python
@@ -165,7 +166,7 @@ pd.concat([
     pipeline.df[pipeline.product_col].value_counts(normalize=True).rename("Original"),
     pipeline.df_sample[pipeline.product_col].value_counts(normalize=True).rename("Sample")
 ], axis=1)
-✅ Next Steps (RAG Integration)
+## Next Steps (RAG Integration)
 Load chunks_metadata.csv and faiss.index in a RAG retrieval pipeline.
 
 Use retrieved chunks as context for a language model to answer natural-language questions.
@@ -174,7 +175,7 @@ Integrate with Gradio or Streamlit for an interactive chatbot.
 
 Evaluate RAG answers with qualitative metrics and real complaints.
 
-🧪 Tests
+ Tests
 Create basic unit tests in tests/:
 
 Ensure CSV loads correctly.
@@ -185,7 +186,7 @@ Validate embedding dimensions.
 
 Verify FAISS index stores the correct number of vectors.
 
-📌 Notes & Best Practices
+ Notes & Best Practices
 Batch embeddings to avoid memory overload.
 
 Use GPU if available (device='cuda') for faster embedding.
@@ -194,7 +195,7 @@ Maintain metadata to trace each chunk back to the original complaint.
 
 Keep vector store and metadata versioned for reproducibility.
 
-📖 References
+References
 FAISS Documentation
 
 Sentence Transformers
