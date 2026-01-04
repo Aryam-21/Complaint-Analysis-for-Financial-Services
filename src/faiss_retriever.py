@@ -48,3 +48,26 @@ class ComplaintRetriever:
                 'chunk_index': row['chunk_index'],
             })
         return results
+class RAGPromptBuilder:
+    """Build a robust, grounded prompt for Task-3"""
+    PROMPT_TEMPLATE = """
+    You are a financial analyst assistant for CrediTrust.
+    Your task is to answer questions about customer complaints.
+    Use ONLY the retrieved complaint excerpts below to formulate your answer.
+    If the context does not contain enough information, state clearly that
+    you do not have enough information.
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    Answer:
+    """.strip()
+    def build_prompt(self, retrieved_chunks, question:str) -> str:
+        if not retrieved_chunks:
+            context = 'No relevant complaint excerpts were retrieved.'
+        else:
+            context = '\n\n'.join(f'-  {chunk['chunk_text']}' for chunk in retrieved_chunks)
+        return self.PROMPT_TEMPLATE.format(context=context,question=question)
