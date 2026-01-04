@@ -69,30 +69,29 @@ class RAGPromptBuilder:
         if not retrieved_chunks:
             context = 'No relevant complaint excerpts were retrieved.'
         else:
-            context = '\n\n'.join(f'-  {chunk['chunk_text']}' for chunk in retrieved_chunks)
+            context = '\n\n'.join(f"-  {chunk['chunk_text']}" for chunk in retrieved_chunks)
         return self.PROMPT_TEMPLATE.format(context=context,question=question)
 class RAGGenerator:
     """Sends the prompt to an LLm and returns generated responce"""
     def __init__(self,
-                 model_name:str="mistralai/Mistral-7B-Instruct-v0.2",
-                 max_new_tokens:int = 250,
-                 temperature:float=0.2):
+                 model_name:str="google/flan-t5-small", max_new_tokens=200):
         try:
             self.generator = pipeline(
-                'text-generation',
+                task="text2text-generation",
                 model=model_name,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                return_full_text=False)
+                device=-1)
+            self.max_new_tokens = max_new_tokens
         except Exception as e:
             raise RuntimeError(f'Failed to load LLM: {e}')
     def generate_answer(self, prompt:str) -> str:
             """Send the combined prompt to the LLM and returns the answer."""
-            if not prompt or prompt.strip():
+            if not prompt or not prompt.strip():
                 raise ValueError('Prompt must be a non-empty string.')
             try:
-                output = self.generator(prompt)
-                return output[0]['generated-text'].strip()
+                output = self.generator(prompt,
+                                        max_new_tokens=self.max_new_tokens,
+                                        do_sample=False)
+                return output[0]['generated_text']
             except Exception as e:
                 raise RuntimeError(f'LLM generation failed: {e}')
 
@@ -502,4 +501,4 @@ class RAGGenerator:
 
 
 
-            )
+            
