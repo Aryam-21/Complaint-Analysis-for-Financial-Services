@@ -1,0 +1,50 @@
+import faiss
+import pandas as pd
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+class ComplaintRetriever:
+    """task 3 FAISS Retriever using CSV metadata"""
+    def __init__(self,
+                 faiss_index_path:str,
+                 metadata_csv_path:str,
+                 embedding_model_name:str="sentence-transformers/all-MiniLM-L6-v2",
+                 top_k:int=5):
+        # Load FAISS index
+        try:
+            self.index = faiss.read_index(faiss_index_path)
+        except Exception as e:
+            raise RuntimeError(f'Failed to load FAISS index: {e}')
+        # Load metadata CSV
+        try:
+            self.metadata = pd.read_csv(metadata_csv_path)
+        except Exception as e:
+            raise RuntimeError(f'Failed to load metadata model: {e}')
+        # Load embedding model
+        try:
+            self.embedder = SentenceTransformer(embedding_model_name)
+        except Exception as e:
+            raise RuntimeError(f'Faile to load embedding model: {e}')
+        self.top_k = top_k
+        # Safty check
+        if self.index.ntotal != len(self.metadata):
+            raise ValueError("FAISS index size does not match metadata rows.")
+    def retrieve(self, question:str):
+        """Embeded user question and retrieve top-k complaint chunks"""
+        if not question or not question.strip():
+            raise ValueError('Question must be non-empty string.')
+        # Embed question
+        query_vector = self.embedder.encode([question],normalize_embeddings=True).astype('float32')
+        # FAISS similarity search
+        distances, indices = self.index.search(query_vector, self.top_k)
+        # collect retrieved chunks
+        results = []
+        for idx in indices[0]:
+            row = self.metadata.iloc[int(idx)]
+            results.append({
+                "chunk_text": row['chunk_text'],
+                "complaint_id": row['complaint_id'],
+                'product_category': row['product_category'],
+                'chunk_index': row['chunk_index'],
+            })
+        return results
